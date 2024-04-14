@@ -30,24 +30,11 @@ jobs:
           version: ${{ vars.HELM_CLI_VERSION }} # default is latest (stable)
           #token: ${{ secrets.GITHUB_TOKEN }} # only needed if version is 'latest'
 
-      - name: Add dependency helm chart repo
+      - name: Release helm chart to Github Pages
         env:
-          AWS_S3: ${{ secrets.AWS_S3 }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         run: |
-          helm version
-          helm plugin install https://github.com/hypnoglow/helm-s3.git --version 0.15.1
-          
           npx zx get-helm-depends-update.mjs
-
-      - name: Release helm chart
-        env:
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-        run: |
           export TAG=${GITHUB_REF#refs/*/}
           export VERSION=$(echo $TAG | cut -d 'v' -f 2)
           export CHECK_CHART_VERSION=$(cat Chart.yaml | grep '^version: ' | cut -d ' ' -f 2)
@@ -56,12 +43,7 @@ jobs:
           echo "CHECK_CHART_VERSION=$CHECK_CHART_VERSION"
           [[ $VERSION != $CHECK_CHART_VERSION ]] && exit 1 || echo "check ok"
           helm dependency update
-          helm package .
-          helm s3 push ./vm-example-chart-$VERSION.tgz vm-example-chart
-      - name: Release helm chart to Github Pages
-        env:
-          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-        run: |
+          helm package .s
           git checkout gh-pages
           export REPOSITORY=$(echo ${GITHUB_REPOSITORY} | cut -d "/" -f 2)
           rm -rf charts/
