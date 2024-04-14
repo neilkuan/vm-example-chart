@@ -1,7 +1,7 @@
-##  https://neilkuan.github.io/helm-demo/
+##  https://neilkuan.github.io/vm-example-chart/
 chart github pages
 
 ### Use this chart
 ```bash
-helm repo add helm-demo https://neilkuan.github.io/vm-example-chart
+helm repo add vm-example-chart https://neilkuan.github.io/vm-example-chart
 ```
