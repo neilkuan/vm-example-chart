@@ -43,7 +43,7 @@ jobs:
           echo "CHECK_CHART_VERSION=$CHECK_CHART_VERSION"
           [[ $VERSION != $CHECK_CHART_VERSION ]] && exit 1 || echo "check ok"
           helm dependency update
-          helm package .s
+          helm package .
           git checkout gh-pages
           export REPOSITORY=$(echo ${GITHUB_REPOSITORY} | cut -d "/" -f 2)
           rm -rf charts/
