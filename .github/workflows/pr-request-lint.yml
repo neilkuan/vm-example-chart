@@ -1,0 +1,72 @@
+name: pull-request-lint
+on:
+  pull_request_target:
+    types:
+      - labeled
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+      - edited
+jobs:
+  validate:
+    name: Validate PR title
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
+      id-token: write
+    outputs:
+      conclusion: ${{ steps.build.outputs.conclusion }}
+    steps:
+      - uses: amannn/action-semantic-pull-request@v5.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          types: |-
+            feat
+            fix
+            chore
+          requireScope: false
+      - id: build
+        run: echo "conclusion=success" >> $GITHUB_OUTPUT
+  update:
+    name: Update status job
+    runs-on: ubuntu-latest
+    needs: validate
+    permissions:
+      contents: write
+      pull-requests: write
+      checks: write
+    steps:
+      - name: Update status check
+        uses: actions/github-script@v7
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CONCLUSION: ${{ needs.validate.outputs.conclusion }}
+          PR_BRANCH: ${{ github.head_ref || github.ref_name }}
+        with:
+          debug: true
+          script: |
+            const response = await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              head_sha: process.env.PR_BRANCH,
+              name: "build",
+              status: "completed",
+              conclusion: process.env.CONCLUSION
+            });
+            
+            console.log(response);
+      # - name: Update status check
+      #   run: "curl -i -v --fail -H \"Accept: application/vnd.github.v3+json\" -H
+      #     \"Authorization: token ${GITHUB_TOKEN}\"
+      #     https://api.github.com/repos/${{ github.repository }}/check-runs -d
+      #     '{\"name\":\"build\",\"head_sha\":\"${{ github.head_ref || github.ref_name }}\",\"status\
+      #     \":\"completed\",\"conclusion\":\"${{ needs.validate.outputs.conclusion
+      #     }}\",\"output\":{\"title\":\"Created via the pull-request-lint
+      #     workflow.\",\"summary\":\"Action run URL: https://github.com/${{
+      #     github.repository }}/actions/runs/${{ github.run_id }}\"}}'"
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     BRANCH_NAME: ${{ github.head_ref || github.ref_name }}

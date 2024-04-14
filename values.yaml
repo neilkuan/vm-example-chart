@@ -1,0 +1,159 @@
+grafana:
+  enabled: true
+  fullnameOverride: "grafana"
+  testFramework:
+    enabled: false
+  adminUser: admin
+  adminPassword: "vm-example-chart"
+  service:
+    port: 3000
+  image:
+    tag: 10.4.1
+  persistence:
+    enabled: true
+    size: 100Mi
+  datasources:
+    datasources.yaml:
+      apiVersion: 1
+      datasources:
+      # - name: Loki
+      #   type: loki
+      #   uid: P8E80F9AEF21F6940
+      #   access: proxy
+      #   url: http://loki:3100
+      #   editable: true
+      #   jsonData:
+      #     maxLines: 1000
+      - name: vm-select-0
+        type: prometheus
+        uid: victoria_metrics_0
+        access: proxy
+        url: http://vmselect:8481/select/0/prometheus
+        editable: true
+  # dashboardProviders:
+  #  dashboardproviders.yaml:
+  #    apiVersion: 1
+  #    providers:
+  #    - name: 'default'
+  #      orgId: 1
+  #      folder: ''
+  #      type: file
+  #      disableDeletion: false
+  #      editable: true
+  #      options:
+  #        path: /var/lib/grafana/dashboards/default
+  # dashboards:
+  #   default:
+  #     events:
+  #       url: https://raw.githubusercontent.com/neilkuan/k8s-event-to-loki-grafana/main/dashboard.json
+
+victoria-logs-single:
+  enabled: true
+  server:
+    enabled: true
+    fullnameOverride: victoria-logs-server
+  fluent-bit:
+    enabled: true
+    fullnameOverride: fluent-bit
+    testFramework:
+      enabled: false
+    daemonSetVolumes:
+      - name: varlog
+        hostPath:
+          path: /var/log
+      - name: varlibdockercontainers
+        hostPath:
+          path: /var/lib/docker/containers
+  
+    daemonSetVolumeMounts:
+      - name: varlog
+        mountPath: /var/log
+      - name: varlibdockercontainers
+        mountPath: /var/lib/docker/containers
+        readOnly: true
+    config:
+      outputs: |
+        [OUTPUT]
+            Name http
+            Match kube.*
+            Host victoria-logs-server
+            port 9428
+            compress gzip
+            uri /insert/jsonline?_stream_fields=stream,kubernetes_pod_name,kubernetes_container_name&_msg_field=log&_time_field=date
+            format json_lines
+            json_date_format iso8601
+            header AccountID 0
+            header ProjectID 0
+      filters: |
+        [FILTER]
+            Name kubernetes
+            Match kube.*
+            Merge_Log On
+            Keep_Log On
+            K8S-Logging.Parser On
+            K8S-Logging.Exclude On
+        [FILTER]
+            Name                nest
+            Match               *
+            Wildcard            pod_name
+            Operation lift
+            Nested_under kubernetes
+            Add_prefix   kubernetes_
+
+victoria-metrics-agent:
+  enabled: true
+  fullnameOverride: "victoria-metrics-agent"
+  replicaCount: 1
+  # ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
+  deployment:
+    enabled: false
+  statefulset:
+    enabled: true
+    clusterMode: true
+    replicationFactor: 1
+    updateStrategy:
+      type: RollingUpdate
+  remoteWriteUrls:
+    - http://vminsert:8480/insert/0/prometheus
+  config:
+    global:
+      scrape_interval: 10s
+      external_labels:
+          datacenter: local-cluster
+
+victoria-metrics-cluster:
+  enabled: true
+  vmselect:
+    enabled: true
+    fullnameOverride: "vmselect"
+  vminsert:
+    enabled: true
+    fullnameOverride: "vminsert"
+    extraArgs:
+      envflag.enable: "true"
+      envflag.prefix: VM_
+      loggerFormat: json
+      maxLabelsPerTimeseries: 60
+  vmstorage:
+    enabled: true
+    fullnameOverride: "vmstorage"
+    retentionPeriod: 1
+    replicaCount: 1
+
+prometheus-node-exporter:
+  enabled: true
+  fullnameOverride: "node-exporter"
+  service:
+    annotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "9100"
+      prometheus.io/path: "/metrics"
+
+kube-state-metrics:
+  enabled: true
+  fullnameOverride: "kube-state-metrics"
+  service:
+    annotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "8080"
+      prometheus.io/path: "/metrics"
