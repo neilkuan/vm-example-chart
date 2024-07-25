@@ -2,7 +2,39 @@ apiVersion: v1
 entries:
   vm-example-chart:
   - apiVersion: v2
-    created: "2024-04-14T05:35:00.706895581Z"
+    created: "2024-07-25T05:34:58.720341918Z"
+    dependencies:
+    - condition: grafana.enabled
+      name: grafana
+      repository: https://grafana.github.io/helm-charts
+      version: 8.3.6
+    - condition: victoria-logs-single.enabled
+      name: victoria-logs-single
+      repository: https://victoriametrics.github.io/helm-charts
+      version: 0.3.6
+    - condition: victoria-metrics-agent.enabled
+      name: victoria-metrics-agent
+      repository: https://victoriametrics.github.io/helm-charts
+      version: 0.10.4
+    - condition: victoria-metrics-cluster.enabled
+      name: victoria-metrics-cluster
+      repository: https://victoriametrics.github.io/helm-charts
+      version: 0.11.14
+    - condition: prometheus-node-exporter.enabled
+      name: prometheus-node-exporter
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 4.32.0
+    - condition: prometheus-node-exporter.enabled
+      name: kube-state-metrics
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 5.18.1
+    digest: 9ac39e47ca8a62910e91cf648815c1561ad33b77c24c15ba9a921c6da2aa15fd
+    name: vm-example-chart
+    urls:
+    - https://neilkuan.github.io/vm-example-chart/vm-example-chart-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    created: "2024-07-25T05:34:58.70505632Z"
     dependencies:
     - condition: grafana.enabled
       name: grafana
@@ -33,4 +65,4 @@ entries:
     urls:
     - https://neilkuan.github.io/vm-example-chart/vm-example-chart-0.0.1.tgz
     version: 0.0.1
-generated: "2024-04-14T05:35:00.691772669Z"
+generated: "2024-07-25T05:34:58.689893281Z"
