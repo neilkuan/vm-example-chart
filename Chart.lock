@@ -1,7 +1,7 @@
 dependencies:
 - name: grafana
   repository: https://grafana.github.io/helm-charts
-  version: 7.3.8
+  version: 8.3.6
 - name: victoria-logs-single
   repository: https://victoriametrics.github.io/helm-charts
   version: 0.3.6
@@ -17,5 +17,5 @@ dependencies:
 - name: kube-state-metrics
   repository: https://prometheus-community.github.io/helm-charts
   version: 5.18.1
-digest: sha256:fe147a421727206b9b317a2fc10599d212e74d0f22a61f0429fea4c777ae94be
-generated: "2024-04-14T12:36:02.213346+08:00"
+digest: sha256:6be3446d96a49fcaeb15b7dfef5723d5d28ef488a225a818ff282ae3d5c00397
+generated: "2024-07-25T09:51:46.906747+08:00"
