@@ -1,4 +1,4 @@
-name: Release Charts
+name: Beta Release Charts
 
 on:
   push:
@@ -36,7 +36,7 @@ jobs:
             echo  "release_check=false" >> $GITHUB_OUTPUT
           fi
 
-      - if : ${{ steps.release.outputs.release_check == 'true' }}
+      - if : ${{ steps.check.outputs.release_check == 'true' }}
         name: Configure Git
         run: |
           git config user.name "$GITHUB_ACTOR"
