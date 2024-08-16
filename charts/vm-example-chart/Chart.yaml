@@ -1,6 +1,6 @@
 apiVersion: v2
 name: vm-example-chart
-version: 0.1.9
+version: 0.1.9-rc1
 dependencies:
   - name: grafana
     repository: https://grafana.github.io/helm-charts
