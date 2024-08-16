@@ -28,9 +28,14 @@ jobs:
       - name: Check if the chart version is not a release version
         id: check
         run: |
-          cat charts/vm-example-chart/Chart.yaml | yq e '.version | select(test("^[0-9]+\\.[0-9]+\\.[0-9]+$"))'
-          count=$(cat charts/vm-example-chart/Chart.yaml | yq e '.version | select(test("^[0-9]+\\.[0-9]+\\.[0-9]+$"))' | wc -l)
-          if [[ $count != 1 ]]; then
+          yq -N e '.version | select(test("^[0-9]+\\.[0-9]+\\.[0-9]+$"))' charts/**/Chart.yaml > count.txt
+          find . -type f -name Chart.yaml > chart_yaml_count.txt
+          cat chart_yaml_count.txt
+          cat count.txt
+          count=$(cat count.txt | wc -l)
+          chart_yaml_count=$(cat chart_yaml_count.txt | wc -l)
+
+          if [[ $count != $chart_yaml_count ]]; then
             echo  "release_check=true" >> $GITHUB_OUTPUT
           else
             echo  "release_check=false" >> $GITHUB_OUTPUT
