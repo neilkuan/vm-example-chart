@@ -55,6 +55,7 @@ jobs:
             echo "GITHUB_SHA: $GITHUB_SHA"
 
             if [[ $CONCLUSION == "failure" ]]; then
+                echo "The build failure!"
                 gh api \
                 --method POST \
                 -H "Accept: application/vnd.github+json" \
@@ -62,6 +63,7 @@ jobs:
                 /repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA \
                  -f "state=failure" -f "description=The build failure!"
             else
+                echo "The build succeeded!"
                 gh api \
                 --method POST \
                 -H "Accept: application/vnd.github+json" \
