@@ -56,6 +56,3 @@ git commit -a -m "release version"
 
 git push origin gh-pages
 ```
-
-
-
