@@ -11,8 +11,10 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
-    outputs:
-      conclusion: ${{ steps.validate.outputs.conclusion }}
+    permissions:
+      contents: write
+      pull-requests: write
+      checks: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -40,21 +42,11 @@ jobs:
               echo "conclusion=failure" >> $GITHUB_OUTPUT
           fi
           echo "conclusion=success" >> $GITHUB_OUTPUT
-
-  update:
-    name: Update status job
-    runs-on: ubuntu-latest
-    needs: check
-    permissions:
-      contents: write
-      pull-requests: write
-      checks: write
-    steps:
       - name: Update status check
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CONCLUSION: ${{ needs.check.outputs.conclusion }}
+          CONCLUSION: ${{ steps.validate.outputs.conclusion }}
           PR_BRANCH: ${{ github.head_ref || github.ref_name }}
         run: |
             echo "CONCLUSION: $CONCLUSION"
@@ -76,4 +68,4 @@ jobs:
                 -H "X-GitHub-Api-Version: 2022-11-28" \
                 /repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA \
                  -f "state=success" -f "description=The build succeeded!"
-            fi  
+            fi
