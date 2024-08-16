@@ -57,18 +57,23 @@ jobs:
           CONCLUSION: ${{ needs.validate.outputs.conclusion }}
           PR_BRANCH: ${{ github.head_ref || github.ref_name }}
         run: |
+            echo "CONCLUSION: $CONCLUSION"
+            echo "PR_BRANCH: $PR_BRANCH"
+            echo "GITHUB_REPOSITORY: $GITHUB_REPOSITORY"
+            echo "GITHUB_SHA: $GITHUB_SHA"
+
             if [[ $CONCLUSION == "failure" ]]; then
                 gh api \
                 --method POST \
                 -H "Accept: application/vnd.github+json" \
                 -H "X-GitHub-Api-Version: 2022-11-28" \
-                /repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA} \
+                /repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA \
                  -f "state=failure" -f "description=The build failure!"
             else
                 gh api \
                 --method POST \
                 -H "Accept: application/vnd.github+json" \
                 -H "X-GitHub-Api-Version: 2022-11-28" \
-                /repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA} \
+                /repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA \
                  -f "state=success" -f "description=The build succeeded!"
             fi  
