@@ -54,7 +54,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CONCLUSION: ${{ needs.validate.outputs.conclusion }}
+          CONCLUSION: ${{ needs.check.outputs.conclusion }}
           PR_BRANCH: ${{ github.head_ref || github.ref_name }}
         run: |
             echo "CONCLUSION: $CONCLUSION"
