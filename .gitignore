@@ -1,1 +1,5 @@
-charts/**/*
+# Helm chart automated files
+/charts/*/charts
+/charts/charts
+/charts/*/requirements.lock
+/charts/*/Chart.lock

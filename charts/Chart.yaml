@@ -1,6 +1,6 @@
 apiVersion: v2
 name: vm-example-chart
-version: 0.1.1
+version: 0.1.2
 dependencies:
   - name: grafana
     repository: https://grafana.github.io/helm-charts
@@ -26,3 +26,7 @@ dependencies:
     repository: https://prometheus-community.github.io/helm-charts
     version: 5.18.1
     condition: prometheus-node-exporter.enabled
+  - name: telegraf
+    repository: https://helm.influxdata.com
+    version: 1.8.53
+    condition: telegraf.enabled

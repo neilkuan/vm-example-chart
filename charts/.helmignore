@@ -14,14 +14,11 @@
 *.swp
 *.bak
 *.tmp
-*.orig
 *~
 # Various IDEs
 .project
 .idea/
 *.tmproj
-.vscode/
-*.mjs
 .github
 values-example/*
 README.md
