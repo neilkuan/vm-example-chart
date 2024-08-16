@@ -3,7 +3,7 @@ name: PR Check Chart.yaml Version
 on:
   pull_request:
     paths:
-      - '*'
+      - '*/**/**'
       - '!.github/workflows/**'
       - '!scripts/**'
       - '!.gitignore'
