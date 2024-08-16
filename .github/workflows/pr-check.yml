@@ -11,6 +11,8 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
+    outputs:
+      conclusion: ${{ steps.validate.outputs.conclusion }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -24,6 +26,7 @@ jobs:
         id: changed-files
         uses: tj-actions/changed-files@v41
       - name: Check commit Chart.yaml
+        id: validate
         env:
           ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
         run: |
@@ -34,5 +37,37 @@ jobs:
           grep Chart.yaml change.txt && echo "Nice Job"
           if [[ $? != 0 ]];then
               echo "Please commit Chart.yaml"
-              exit 1 
+              echo "conclusion=failure" >> $GITHUB_OUTPUT
           fi
+          echo "conclusion=success" >> $GITHUB_OUTPUT
+
+  update:
+    name: Update status job
+    runs-on: ubuntu-latest
+    needs: validate
+    permissions:
+      contents: write
+      pull-requests: write
+      checks: write
+    steps:
+      - name: Update status check
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CONCLUSION: ${{ needs.validate.outputs.conclusion }}
+          PR_BRANCH: ${{ github.head_ref || github.ref_name }}
+        run: |
+            if [[ $CONCLUSION == "failure" ]]; then
+                gh api \
+                --method POST \
+                -H "Accept: application/vnd.github+json" \
+                -H "X-GitHub-Api-Version: 2022-11-28" \
+                /repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA} \
+                 -f "state=failure" -f "description=The build failure!"
+            else
+                gh api \
+                --method POST \
+                -H "Accept: application/vnd.github+json" \
+                -H "X-GitHub-Api-Version: 2022-11-28" \
+                /repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA} \
+                 -f "state=success" -f "description=The build succeeded!"
+            fi  
