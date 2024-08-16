@@ -53,6 +53,7 @@ jobs:
       - name: Update status check
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CONCLUSION: ${{ needs.validate.outputs.conclusion }}
           PR_BRANCH: ${{ github.head_ref || github.ref_name }}
         run: |
