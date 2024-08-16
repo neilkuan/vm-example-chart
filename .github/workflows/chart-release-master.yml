@@ -21,17 +21,34 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Configure Git
+      - name: yq - portable yaml processor
+        uses: mikefarah/yq@v4.9.8
+            
+      - name: Check if the chart version is not a release version
+        id: check
+        run: |
+          cat charts/vm-example-chart/Chart.yaml | yq e '.version | select(test("^[0-9]+\\.[0-9]+\\.[0-9]+$"))'
+          count=$(cat charts/vm-example-chart/Chart.yaml | yq e '.version | select(test("^[0-9]+\\.[0-9]+\\.[0-9]+$"))' | wc -l)
+          if [[ $count != 1 ]]; then
+            echo  "release_check=false" >> $GITHUB_OUTPUT
+          else
+            echo  "release_check=true" >> $GITHUB_OUTPUT
+          fi
+
+      - if : ${{ steps.check.outputs.release_check == 'true' }}
+        name: Configure Git
         run: |
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
-      - name: Install Helm
+      - if : ${{ steps.check.outputs.release_check == 'true' }}
+        name: Install Helm
         uses: azure/setup-helm@v4
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
-      - name: Run chart-releaser
-        uses: helm/chart-releaser-action@v1.6.0
+      - if : ${{ steps.check.outputs.release_check == 'true' }}
+        name: Run chart-releaser
+        uses: neilkuan/chart-releaser-action@v1.6.2
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
