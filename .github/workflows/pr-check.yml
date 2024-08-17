@@ -72,8 +72,8 @@ jobs:
                 -f 'name=The PR Check Commit Chart.yaml' \
                 -f 'head_sha=${{ github.event.pull_request.head.sha }}' \
                 -f 'status=completed' \
+                -f 'conclusion=success' \
                 -f 'output[title]=The PR Check Commit Chart.yaml completed !!!' \
                 -f 'output[summary]=The PR Check Commit Chart.yaml completed !!!' \
-                -f 'output[conclusion]=success' \
                 /repos/${{ github.repository }}/check-runs
             fi
