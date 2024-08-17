@@ -1,6 +1,7 @@
 name: PR Check Chart.yaml Version
 
 on:
+  merge_group:
   pull_request:
     paths:
       - '*/**/**'

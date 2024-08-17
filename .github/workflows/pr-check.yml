@@ -1,6 +1,7 @@
 name: PR Check Commit Chart.yaml
 
 on:
+  merge_group:
   pull_request:
     paths:
       - '*/**/**'
