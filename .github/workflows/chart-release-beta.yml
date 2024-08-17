@@ -1,10 +1,6 @@
 name: Beta Release Charts
 
 on:
-  pull_request:
-    paths:
-      - "**/Chart.yaml"
-  merge_group:
   push:
     branches:
       - dt-*
