@@ -1,6 +1,7 @@
 name: PR Check Commit Chart.yaml
 
 on:
+  merge_group:
   pull_request:
     paths:
       - '*/**/**'
@@ -11,8 +12,11 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
-    outputs:
-      conclusion: ${{ steps.validate.outputs.conclusion }}
+    permissions:
+      contents: write
+      pull-requests: write
+      checks: write
+      statuses: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -40,34 +44,12 @@ jobs:
               echo "conclusion=failure" >> $GITHUB_OUTPUT
           fi
           echo "conclusion=success" >> $GITHUB_OUTPUT
-
-  update:
-    name: Update status job
-    runs-on: ubuntu-latest
-    needs: validate
-    permissions:
-      contents: write
-      pull-requests: write
-      checks: write
-    steps:
-      - name: Update status check
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CONCLUSION: ${{ needs.validate.outputs.conclusion }}
-          PR_BRANCH: ${{ github.head_ref || github.ref_name }}
-        run: |
-            if [[ $CONCLUSION == "failure" ]]; then
-                gh api \
-                --method POST \
-                -H "Accept: application/vnd.github+json" \
-                -H "X-GitHub-Api-Version: 2022-11-28" \
-                /repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA} \
-                 -f "state=failure" -f "description=The build failure!"
-            else
-                gh api \
-                --method POST \
-                -H "Accept: application/vnd.github+json" \
-                -H "X-GitHub-Api-Version: 2022-11-28" \
-                /repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA} \
-                 -f "state=success" -f "description=The build succeeded!"
-            fi  
+      - name: checks-action
+        uses: LouisBrunner/checks-action@v2.0.0
+        id: check
+        with:
+          sha: ${{ github.sha }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          name: check
+          status: completed
+          conclusion: ${{ job.status }}
