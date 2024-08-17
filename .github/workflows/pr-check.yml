@@ -45,7 +45,7 @@ jobs:
           fi
           echo "conclusion=success" >> $GITHUB_OUTPUT
       - name: checks-action
-        uses: LouisBrunner/checks-action@v1.3.1
+        uses: LouisBrunner/checks-action@v2.0.0
         id: check
         with:
           sha: ${{ github.sha }}
