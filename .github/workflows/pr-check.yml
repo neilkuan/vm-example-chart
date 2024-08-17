@@ -45,11 +45,17 @@ jobs:
           fi
           echo "conclusion=success" >> $GITHUB_OUTPUT
       - name: checks-action
-        uses: LouisBrunner/checks-action@v2.0.0
+        #uses: LouisBrunner/checks-action@v2.0.0
         id: check
-        with:
-          sha: ${{ github.sha }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          name: check
-          status: completed
-          conclusion: ${{ job.status }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api \
+          --method POST \
+          -H "Accept: application/vnd.github+json" \
+          -H "X-GitHub-Api-Version: 2022-11-28" \
+          /repos/$GITHUB_REPOSITORY/statuses/${{ github.sha }} \
+          -f "state=success" \
+          -f "description=The build succeeded!" \
+          -f "context=continuous-integration/check"
+          
