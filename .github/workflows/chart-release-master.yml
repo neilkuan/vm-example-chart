@@ -54,6 +54,6 @@ jobs:
 
       - if : ${{ steps.check.outputs.release_check == 'true' }}
         name: Run chart-releaser
-        uses: SplashtopInc/chart-releaser-action@v1.6.2
+        uses: SplashtopInc/chart-releaser-action@415c8c200613bc4a5f121b8e725a7b707211b6a4
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
