@@ -51,4 +51,4 @@ jobs:
           sha: ${{ github.sha }}
           token: ${{ secrets.GITHUB_TOKEN }}
           name: check
-          status: success
+          status: completed
