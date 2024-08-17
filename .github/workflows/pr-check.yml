@@ -52,4 +52,4 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           name: check
           status: completed
-          conclusion: success
+          conclusion: ${{ job.status }}
