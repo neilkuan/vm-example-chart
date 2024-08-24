@@ -10,7 +10,6 @@ on:
       - edited
 jobs:
   check:
-    name: Validate PR title
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
