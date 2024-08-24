@@ -8,7 +8,7 @@ grafana:
   service:
     port: 3000
   image:
-    tag: 11.1.0
+    tag: 11.1.2
   plugins:
   - https://github.com/VictoriaMetrics/victorialogs-datasource/releases/download/v0.2.5/victorialogs-datasource-v0.2.5.zip;victorialogs-datasource
   grafana.ini:
@@ -18,6 +18,10 @@ grafana:
   persistence:
     enabled: true
     size: 100Mi
+  alerting:
+    contactpoints.yaml:
+      secret:
+        contactPoints: []
   datasources:
     datasources.yaml:
       apiVersion: 1
