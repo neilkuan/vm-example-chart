@@ -8,7 +8,7 @@ dependencies:
     condition: grafana.enabled
   - name: victoria-logs-single
     repository: https://victoriametrics.github.io/helm-charts
-    version: 0.3.6
+    version: 0.6.1
     condition: victoria-logs-single.enabled
   - name: victoria-metrics-agent
     repository: https://victoriametrics.github.io/helm-charts
