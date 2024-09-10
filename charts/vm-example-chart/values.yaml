@@ -85,7 +85,7 @@ victoria-logs-single:
         [OUTPUT]
             Name http
             Match kube.*
-            Host victoria-logs-server
+            Host victoria-logs-single
             port 9428
             compress gzip
             uri /insert/jsonline?_stream_fields=stream,kubernetes_pod_name,kubernetes_container_name&_msg_field=log&_time_field=date
