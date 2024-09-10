@@ -10,7 +10,7 @@ grafana:
   image:
     tag: 11.1.2
   plugins:
-  - https://github.com/VictoriaMetrics/victorialogs-datasource/releases/download/v0.2.5/victorialogs-datasource-v0.2.5.zip;victorialogs-datasource
+  - https://github.com/VictoriaMetrics/victorialogs-datasource/releases/download/v0.4.0/victorialogs-datasource-v0.4.0.zip;victorialogs-datasource
   grafana.ini:
     plugins:
       enable_alpha: true
@@ -30,7 +30,7 @@ grafana:
         type: victorialogs-datasource
         uid: VictoriaLogs
         access: proxy
-        url: http://victoria-logs-server:9428
+        url: http://victoria-logs-single:9428
         editable: true
       - name: vm-select-0
         type: prometheus
