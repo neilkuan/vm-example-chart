@@ -57,9 +57,10 @@ grafana:
 
 victoria-logs-single:
   enabled: true
-  server:
-    enabled: true
-    fullnameOverride: victoria-logs-server
+  global:
+    victoriaLogs:
+      server:
+        fullnameOverride: victoria-logs-single
   fluent-bit:
     enabled: true
     fullnameOverride: fluent-bit
