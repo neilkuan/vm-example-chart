@@ -30,3 +30,11 @@ dependencies:
     repository: https://helm.influxdata.com
     version: 1.8.53
     condition: telegraf.enabled
+  - name: opentelemetry-collector
+    repository: https://open-telemetry.github.io/opentelemetry-helm-charts
+    version: 0.119.1
+    condition: opentelemetry-collector.enabled
+  - name: beyla
+    repository: https://grafana.github.io/helm-charts
+    version: 1.7.3
+    condition: beyla.enabled
